@@ -1,27 +1,27 @@
-# Case Study 57: Smart Canteen Order and Stock Management
+# Case Study 17: Student Performance Trend Analysis
 
 ## 1. Problem Statement
-Process canteen orders, calculate bills, update stock, reject unavailable quantities, and summarize sales and remaining inventory.
+Compare a student's marks across multiple examinations, calculate improvements or declines, identify weak subjects, and classify performance.
 
 ## 2. Objectives
-- Display a menu and current stock.
-- Process repeated customer orders.
-- Prevent orders exceeding available stock and calculate total sales.
+- Store subject marks for two examinations.
+- Calculate subject-wise changes and averages.
+- Identify weak subjects and classify overall performance.
 
 ## 3. Assumptions
-- The menu has tea, sandwich, and juice.
-- Initial stock and prices are fixed in the program.
-- The user enters item numbers and quantities; 0 ends ordering.
+- Marks are out of 100.
+- The same subjects appear in both examinations.
+- A subject is considered weak if the latest mark is below 40.
+- Performance is Excellent at 85 or above, Good at 70 or above, otherwise Needs Improvement.
 
 ## 4. Algorithm
-1. Start with menu, prices, stock, and total sales.
-2. Display menu and ask for item number.
-3. If item number is 0, stop ordering.
-4. Validate item number and quantity.
-5. If enough stock exists, calculate bill, reduce stock, and add to sales.
-6. Otherwise reject the order.
-7. Display total sales and remaining stock.
-8. Stop.
+1. Start.
+2. Read subject names and marks for two examinations.
+3. Validate marks are between 0 and 100.
+4. For each subject, calculate change and print improvement or decline.
+5. Calculate latest average and identify weak subjects.
+6. Classify performance using the stated thresholds.
+7. Display the report and stop.
 
 ## 5. Flowchart
 The flowchart below shows the general flow of this program. The validation and processing boxes correspond to the specific steps in the algorithm.
@@ -41,18 +41,16 @@ flowchart TD
 ## 6. Pseudocode
 ```text
 START
-SET menu, prices, stock, sales = 0
-REPEAT
-  DISPLAY menu and stock
-  INPUT item number
-  IF item number = 0: EXIT LOOP
-  IF invalid item: DISPLAY error; CONTINUE
-  INPUT quantity
-  IF quantity <= 0: DISPLAY error
-  ELSE IF quantity > stock: REJECT order
-  ELSE: bill = price * quantity; stock = stock - quantity; sales = sales + bill
-UNTIL item number = 0
-DISPLAY sales and remaining stock
+INPUT subject names and marks for Exam 1 and Exam 2
+FOR each subject:
+  change = Exam2 mark - Exam1 mark
+  DISPLAY change as improvement, decline, or no change
+CALCULATE latest average
+FIND subjects with latest mark below 40
+IF average >= 85, classification = Excellent
+ELSE IF average >= 70, classification = Good
+ELSE classification = Needs Improvement
+DISPLAY report
 STOP
 ```
 
@@ -60,45 +58,51 @@ STOP
 The complete runnable program is saved in [`program.py`](program.py).
 
 ```python
-menu = ["Tea", "Sandwich", "Juice"]
-prices = [10, 40, 25]
-stock = [30, 15, 20]
-sales = 0
+subjects = ["Python", "Mathematics", "English", "Physics"]
+exam1 = []
+exam2 = []
 
-while True:
-    print("\nSMART CANTEEN MENU")
-    for i in range(len(menu)):
-        print(i + 1, menu[i], "- Rs.", prices[i], "| Stock:", stock[i])
-    print("0. Finish orders")
-    choice = int(input("Choose item number: "))
+for subject in subjects:
+    mark1 = float(input("Enter " + subject + " mark in Exam 1: "))
+    mark2 = float(input("Enter " + subject + " mark in Exam 2: "))
+    if mark1 < 0 or mark1 > 100 or mark2 < 0 or mark2 > 100:
+        print("Invalid marks. Enter marks from 0 to 100.")
+        raise SystemExit
+    exam1.append(mark1)
+    exam2.append(mark2)
 
-    if choice == 0:
-        break
-    if choice < 1 or choice > len(menu):
-        print("Invalid item number.")
-        continue
+print("\nSTUDENT PERFORMANCE REPORT")
+total = 0
+weak_subjects = []
 
-    quantity = int(input("Enter quantity: "))
-    if quantity <= 0:
-        print("Quantity must be positive.")
-    elif quantity > stock[choice - 1]:
-        print("Not enough stock. Order rejected.")
+for i in range(len(subjects)):
+    change = exam2[i] - exam1[i]
+    total += exam2[i]
+    if change > 0:
+        trend = "Improved"
+    elif change < 0:
+        trend = "Declined"
     else:
-        bill = prices[choice - 1] * quantity
-        stock[choice - 1] -= quantity
-        sales += bill
-        print("Order accepted. Bill: Rs.", bill)
+        trend = "No change"
+    print(subjects[i], ":", trend, "(" + str(change) + " marks )")
+    if exam2[i] < 40:
+        weak_subjects.append(subjects[i])
 
-print("\nDAILY SUMMARY")
-print("Total sales: Rs.", sales)
-print("Remaining stock:")
-for i in range(len(menu)):
-    print(menu[i], ":", stock[i])
+average = total / len(subjects)
+print("Latest average:", round(average, 2))
+print("Weak subjects:", weak_subjects if weak_subjects else "None")
+
+if average >= 85:
+    print("Performance: Excellent")
+elif average >= 70:
+    print("Performance: Good")
+else:
+    print("Performance: Needs Improvement")
 ```
 
 ## 8. Test Cases
-- **Input:** Order 2 sandwiches, then finish
-  **Expected result:** Bill = ₹80; sandwich stock decreases from 15 to 13; total sales = ₹80.
+- **Input:** Exam 1: 60,70,80,50; Exam 2: 70,65,90,35
+  **Expected result:** Python improved by 10; Mathematics declined by 5; English improved by 10; Physics declined by 15; average 65.0; Physics weak; Needs Improvement
 
 **Note:** Run the program with the test inputs above and capture the actual console output for the submission screenshots.
 
@@ -108,4 +112,4 @@ Add a screenshot of the program running here after executing `program.py`.
 Suggested filename: `output.png`
 
 ## 10. Conclusion
-The program manages canteen orders, updates stock after valid sales, and reports daily sales.
+The program compares examination marks, identifies changes and weak subjects, and classifies performance.

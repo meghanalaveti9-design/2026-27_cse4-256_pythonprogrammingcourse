@@ -1,34 +1,40 @@
-menu = ["Tea", "Sandwich", "Juice"]
-prices = [10, 40, 25]
-stock = [30, 15, 20]
-sales = 0
+subjects = ["Python", "Mathematics", "English", "Physics"]
+exam1 = []
+exam2 = []
 
-while True:
-    print("\nSMART CANTEEN MENU")
-    for i in range(len(menu)):
-        print(i + 1, menu[i], "- Rs.", prices[i], "| Stock:", stock[i])
-    print("0. Finish orders")
-    choice = int(input("Choose item number: "))
+for subject in subjects:
+    mark1 = float(input("Enter " + subject + " mark in Exam 1: "))
+    mark2 = float(input("Enter " + subject + " mark in Exam 2: "))
+    if mark1 < 0 or mark1 > 100 or mark2 < 0 or mark2 > 100:
+        print("Invalid marks. Enter marks from 0 to 100.")
+        raise SystemExit
+    exam1.append(mark1)
+    exam2.append(mark2)
 
-    if choice == 0:
-        break
-    if choice < 1 or choice > len(menu):
-        print("Invalid item number.")
-        continue
+print("\nSTUDENT PERFORMANCE REPORT")
+total = 0
+weak_subjects = []
 
-    quantity = int(input("Enter quantity: "))
-    if quantity <= 0:
-        print("Quantity must be positive.")
-    elif quantity > stock[choice - 1]:
-        print("Not enough stock. Order rejected.")
+for i in range(len(subjects)):
+    change = exam2[i] - exam1[i]
+    total += exam2[i]
+    if change > 0:
+        trend = "Improved"
+    elif change < 0:
+        trend = "Declined"
     else:
-        bill = prices[choice - 1] * quantity
-        stock[choice - 1] -= quantity
-        sales += bill
-        print("Order accepted. Bill: Rs.", bill)
+        trend = "No change"
+    print(subjects[i], ":", trend, "(" + str(change) + " marks )")
+    if exam2[i] < 40:
+        weak_subjects.append(subjects[i])
 
-print("\nDAILY SUMMARY")
-print("Total sales: Rs.", sales)
-print("Remaining stock:")
-for i in range(len(menu)):
-    print(menu[i], ":", stock[i])
+average = total / len(subjects)
+print("Latest average:", round(average, 2))
+print("Weak subjects:", weak_subjects if weak_subjects else "None")
+
+if average >= 85:
+    print("Performance: Excellent")
+elif average >= 70:
+    print("Performance: Good")
+else:
+    print("Performance: Needs Improvement")
